@@ -2,15 +2,21 @@
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Logs from './Logs'
+import { useContext } from 'react'
+import DataContext from '@/context/Data/DataContext'
 
-function Logger() {
+function Logger({liftUp}) {
   const searchParams = useSearchParams(); 
   const [data, setData] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [filteredData, setFilteredData] = useState([]); 
   const [error, setError] = useState(null);
 
+  const {myData,setData:setMyData} = useContext(DataContext);
+
   const paramsString = searchParams.toString();
+
+
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -35,7 +41,7 @@ function Logger() {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchLogs();
-    }, 2000);
+    }, 800);
     return () => clearTimeout(timer)
   }, []); 
 
@@ -51,10 +57,14 @@ function Logger() {
     const isWarn = searchParams.get('Warn');
 
     let filtered = [...data];
+
     let filteredNew = filtered.filter((item)=>{
-      return ((isError=='true') ? item.message.includes('ERROR'):false) || ((isInfo=='true') ? item.message.includes('info'):false) || ((isWarn=='true') ? item.message.includes('WARN'):false)
+      return ((isError=='true') ? item.message.includes('ERROR'):false) || ((isInfo=='true') ? item.message.includes('INFO'):false) || ((isWarn=='true') ? item.message.includes('WARN'):false)
     });
     setFilteredData(filteredNew);
+    liftUp(filteredNew);
+    setMyData(filteredNew)
+
   },[data, paramsString])
 
 
@@ -70,7 +80,7 @@ function Logger() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        filteredData?.map((d, index) => (
+        myData?.map((d, index) => (
           <Logs key={index} log={d} />
         ))
       )}

@@ -2,7 +2,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { authOptions } from "@/utils/authOptions";
 import SessionWrapper from "@/components/SessionWrapper";
-
+import DataState from "@/context/Data/DataState";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,13 +24,15 @@ export default async function RootLayout({ children }) {
   // const session = await getServerSession(authOptions);
   return (
     <SessionWrapper>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
+        <html lang="en">
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+            <DataState>
+            {children}
+          </DataState>
+          </body>
+        </html>
     </SessionWrapper>
   );
 }
